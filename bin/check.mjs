@@ -30,7 +30,7 @@ for (const name of (await readdir(ex)).filter((n) => n.startsWith("authenticate0
   const req = await load(name);
   need(req.method === "authenticate0" && req.jsonrpc === "2.0", `${name}: JSON-RPC 2.0, method authenticate0`);
   for (const k of ["igent", "role", "hardware", "streams", "contract"]) need(k in req.params, `${name}: params.${k}`);
-  need(req.params.contract === 0, `${name}: contract version 0`);
+  need(req.params.contract === 1, `${name}: contract version 1`);
   need(Array.isArray(req.params.streams) && req.params.streams.includes(0), `${name}: stream 0 declared`);
   need(typeof req.params.hardware === "string" && req.params.hardware.length > 0, `${name}: hardware is the device's own identifier (§3)`);
 }

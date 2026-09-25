@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>The igent.me contract, version 0</title>
+<title>The igent.me contract, version 1</title>
 <meta name="description" content="The seam between an igent and its portal: one WebTransport connection, a heartbeat datagram, a control stream, an agent stream, three topics, and a verdict on every call. Rendered from contract.md beside this page.">
 <style>
   :root { --bg: #0d1117; --panel: #161b22; --border: #30363d; --fg: #e6edf3; --dim: #8b949e; --accent: #58a6ff; --permit: #3fb950; --deny: #f85149; }
@@ -100,7 +100,7 @@ try {
   } catch {}
   $("status").innerHTML = `<b>contract.md</b> sha256 <code>${own.slice(0, 16)}</code> · rendered here, unchanged · ` +
     `heartbeat fixture <span class="${wire <= 200 ? "ok" : "bad"}">${wire} B of 200</span> · ${specLine} · ` +
-    `<a href="contract.md">the Markdown</a> · <a href="examples/heartbeat.json">examples/</a> · run <code>node bin/check.mjs</code> for the 54 rules`;
+    `<a href="contract.md">the Markdown</a> · <a href="examples/heartbeat.json">examples/</a> · run <code>node bin/check.mjs</code> for the rules`;
 } catch (e) {
   $("error").hidden = false; $("error").textContent = `could not render: ${e.message}`;
 }

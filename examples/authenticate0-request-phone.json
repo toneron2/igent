@@ -1,4 +1,4 @@
 { "jsonrpc": "2.0", "id": 1, "method": "authenticate0",
   "params": { "igent": "s23-0001", "role": 1, "hardware": "Anthony-s-S23",
               "bio": { "kind": "fingerprint", "sig": "b64:9kQ7…", "t": 1789564800000 },
-              "streams": [0, 1], "contract": 0 } }
+              "streams": [0, 1], "contract": 1 } }
