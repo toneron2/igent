@@ -59,7 +59,7 @@ session and returns the capability set the igent may call, closed for the sessio
 { "jsonrpc": "2.0", "id": 1, "method": "authenticate0",
   "params": { "igent": "sh-0001", "role": 2, "hardware": "esp32p4:7c:df:a1:…",
               "bio": { "kind": "operator-presence", "sig": "…", "t": 1789564800000 },
-              "streams": [0, 1, 2, 3], "contract": 0 } }
+              "streams": [0, 1, 2, 3], "contract": 1 } }
 ```
 
 | Param | Rule |
