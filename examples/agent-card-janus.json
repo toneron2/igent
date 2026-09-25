@@ -1,0 +1,3 @@
+{ "name": "janus", "glyph": "⚖️", "class": "noevo", "scheme": 0,
+  "capabilities": ["authenticate0", "authorize0", "evaluate"],
+  "verdict_required": false, "endpoint": "stream:0" }

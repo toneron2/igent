@@ -1,0 +1,7 @@
+{ "jsonrpc": "2.0", "id": 1,
+  "result": { "session": "5c1e7a90", "rate": { "idle": 1, "max": 50 }, "missed": { "degraded": 3, "terminated": 10 },
+              "engine": { "urge": "0.1.1" },
+              "verdict": { "id": "v-000002", "valid": true, "confidence": 255,
+                           "expr": "must device_registered and must contract_supported and must bio_signature_fresh",
+                           "notation": "O(device_registered) ∧ O(contract_supported) ∧ O(bio_signature_fresh)",
+                           "trace": "sha256:9f2c1a77e0b4d6a3" } } }

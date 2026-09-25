@@ -1,0 +1,3 @@
+{ "name": "athena", "glyph": "⭐", "class": "evo", "scheme": 2,
+  "capabilities": ["generate"],
+  "verdict_required": true, "endpoint": "stream:0" }

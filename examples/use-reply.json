@@ -1,0 +1,6 @@
+{ "jsonrpc": "2.0", "id": 27,
+  "result": { "session": "5c1e7a90", "tool": "use", "output": { "slot": "Tuesday 10:20" },
+              "verdict": { "id": "v-000031", "valid": true, "confidence": 255,
+                           "expr": "must slot_open and must within_referral",
+                           "notation": "O(slot_open) ∧ O(within_referral)",
+                           "trace": "sha256:c0ffee0123456789" } } }

@@ -1,0 +1,6 @@
+{ "jsonrpc": "2.0", "id": 1,
+  "error": { "code": 4030, "message": "denied",
+             "data": { "verdict": { "id": "v-000001", "valid": false, "confidence": 255,
+                                    "expr": "must device_registered and must contract_supported",
+                                    "notation": "O(device_registered) ∧ O(contract_supported)",
+                                    "trace": "sha256:2b4c9e0f7a1d3c58" } } } }
