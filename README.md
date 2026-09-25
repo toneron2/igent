@@ -8,7 +8,7 @@ device built against it does not change when the portal moves.
 | | |
 |---|---|
 | **Status** | Procurement in process. |
-| **Version** | 0 (2026-09-21), for review; [`contract.md`](contract.md) |
+| **Version** | 1 (2026-09-25); [`contract.md`](contract.md), changes in §11 |
 | **Transport** | WebTransport over HTTP/3: QUIC, TLS 1.3, UDP |
 | **Heartbeat** | one datagram of at most 200 bytes, 1 to 50 Hz, carrying the bio-signature |
 | **Session** | `authenticate0`, then `authorize0`: a closed set of capabilities per session |

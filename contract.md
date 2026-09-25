@@ -1,11 +1,11 @@
-# The igent.me contract, version 0
+# The igent.me contract, version 1
 
 **The seam between an igent and its portal: one WebTransport connection, a heartbeat
 datagram, a control stream, an agent stream, three topics, and a verdict on every call.**
 It is the one thing that stays the same at every rung of the ladder: while it holds,
-moving the portal from A6 to Cloud Run changes a deployment, not a device. Consumed by
-the portal, by every igent device, and by the igent.me site. Version 0 is for review, not
-for building against; §11 says how it changes.
+moving the portal from A6 to a hosted server changes a deployment, not a device. Consumed
+by the portal, by every igent device, and by the igent.me site. Version 1 is the version the
+lab builds against; §11 says how it changes.
 
 | | |
 |---|---|
@@ -17,7 +17,7 @@ for building against; §11 says how it changes.
 | **Topics** | `security`, `control`, `heartbeat` (§7) |
 | **Verdict** | URGE's: id, `valid`, `confidence`, notation, trace hash (§8) |
 | **Status line** | the stream-0 event every igent renders, by reference (§9) |
-| **Rungs** | 1–3 the portal is A6 behind OPNsense; 4 it is igent.me on Cloud Run; the contract is the same (§10) |
+| **Rungs** | 1–2 the portal is A6; 3 a box on the private lab network; 4 igent.me on a server with public UDP 443; the contract is the same (§10) |
 
 ## 1. Terms
 
@@ -130,11 +130,25 @@ datagram; the portal never asks for a rate, it reads one. `1` (IDLE) is the floo
 | DEGRADED | 3 missed in a row: the portal keeps the session, refuses new `use` and `execute` calls, and emits ⚖️ Janus `denied` on stream 0 with the reason |
 | TERMINATED | 10 missed in a row, or a bio-signature that fails verification on 3 consecutive datagrams: the session is closed, the streams reset, and the next `authenticate0` starts over |
 
-A bio-signature that weakens degrades before it terminates: the Security Agent's verdict
-carries `confidence`, and the DEGRADED rule applies below the scheme's threshold. The
-device side of this, the NOEVO shadow of the Security Agent, keeps the device safe on its
-own when the link is down; what it may do alone is the device's interface document,
-not this one.
+A bio-signature that weakens degrades before it terminates. Its strength is the verifier's
+own score, carried as the slot `bio_signature_strong` (true above the verifier's threshold);
+it is never read from a verdict's `confidence`, which measures agreement among the engines
+that ran (§8). **Every state is decided on a gate's `valid`**, and each gate is a governance
+expression the portal evaluates through URGE on every datagram or call:
+
+| Gate | Expression | When `valid` is false |
+|---|---|---|
+| connect | `must tls_established and must contract_supported` | refused `4260` |
+| sign-on | `must device_registered and must hardware_matches_register and must bio_signature_fresh` | refused `4010` (the device) or `4030` (the signature) |
+| capabilities | `must session_active and must_not capability_outside_class` | the call refused `4030` |
+| heartbeat state | `must heartbeat_in_window and must bio_signature_fresh and must bio_signature_strong` | DEGRADED |
+| termination | `must_not heartbeat_lost and must_not bio_signature_failed_thrice` | TERMINATED |
+
+Who measures each slot, and the verdict each case returns, is the governed workflow W0 in
+`toneron2/broad` (`workflows/`). The portal and the device's shadow evaluate these same
+lines. The device side, the NOEVO shadow of the Security Agent, keeps the device safe on its
+own when the link is down; what it may do alone is the device's interface document, not
+this one.
 
 ## 5. The control stream: MCP
 
@@ -156,11 +170,12 @@ is closed:
 | `compose` | Composer | 🔥 Helios | EVO | 3 | a workflow from parts; nothing runs until Janus admits it |
 | `getlog` `tracklog` | Monitor / Ops | — | EVO | — | what the O&I planes read |
 | `slew` `hold` | articulation | 🐌 Oonia routes, ⚖️ Janus verifies | NOEVO | 1 | portal → sensor head: a target vector and a rate; the device's state machine may refuse locally |
+| `navigate` | navigation | 🐌 Oonia routes, ⚖️ Janus verifies | NOEVO | 1 | portal → drone: a route object, its shape the drone's to define; admitted by `must session_active and must route_known and must_not room_occupied_by_other and must_not hazard_flag`; the drone's shadow may refuse locally |
 
 Every reply, success or error, carries `verdict` (§8). A call without a session is refused
 `4010`; a call outside the `authorize0` set is refused `4030`. Tool schemas are the MCP
 server's own and are not restated here; the contract fixes the names, the owner and the
-verdict, so a device built against v0 knows what it may ask and what comes back.
+verdict, so a device built against this version knows what it may ask and what comes back.
 
 ## 6. The agent stream: A2A
 
@@ -197,7 +212,7 @@ Every reply, every A2A delivery, every status line carries the same object, URGE
 |---|---|
 | `id` | the portal's id for this evaluation; unique per session |
 | `valid` | URGE's `valid` |
-| `confidence` | URGE's, 0–255 |
+| `confidence` | URGE's, 0–255; reported, never decided on: every rule in this contract decides on `valid` |
 | `expr` | the governance expression evaluated; the reader can re-run it |
 | `notation` | URGE's `formal_notation` |
 | `trace` | `sha256:` of the trace as Curator stored it; the audit record |
@@ -219,9 +234,12 @@ reference and restates none of it. Its verdict object is §8's.
 |---|---|---|---|---|
 | 1 | desktop portlet | LAN | A6 | §3 by login, no `b`; stream 0; the status line in the portlet bar |
 | 2 | S23 | 5G → WireGuard through OPNsense | A6 | all of it inside the tunnel; the tunnel is the stand-in, not the design |
-| 3 | sensor head | WiFi 6, the pocket router | A6 | all of it; streams 1–3; `slew` `hold` down stream 0 |
-| 4 | phone app or AOSP | 5G WebTransport | igent.me on Cloud Run | all of it, unchanged; Pub/Sub carries §7 |
+| 3 | sensor head | whatever the lab router offers (WiFi, or wired where the igent has a port) | the igent.me box on the private lab network; A6 reaches it through the lab router | all of it; streams 1–3; `slew` `hold` down stream 0 |
+| 4 | phone app or AOSP | 5G WebTransport | igent.me on a server with public UDP 443 | all of it, unchanged; Pub/Sub carries §7 |
 | 5 | igent(n) | 5G | igent.me → service(n) | all of it |
+
+Every rung needs UDP 443 from the igent to the portal: WebTransport runs on HTTP/3 over
+QUIC. A hosting platform that accepts only HTTP/1.1 and HTTP/2 cannot carry this contract.
 
 ## 11. Versions and conformance
 
@@ -234,3 +252,4 @@ rules here (sizes, required fields, codes) and a consumer runs the same check on
 | | Date | Change |
 |---|---|---|
 | v0 | 2026-09-21 | first draft; the status line by reference (§9) |
+| v1 | 2026-09-25 | §4 the five gates that decide every state, the bio-signature's strength as its own slot; §5 `navigate` for the drone; §8 `confidence` reported, never decided on; §10 rung 3 on the lab box, rung 4 on a server with public UDP 443 |
