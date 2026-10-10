@@ -132,8 +132,8 @@ datagram; the portal never asks for a rate, it reads one. `1` (IDLE) is the floo
 
 A bio-signature that weakens degrades before it terminates. Its strength is the verifier's
 own score, carried as the slot `bio_signature_strong` (true above the verifier's threshold);
-it is never read from a verdict's `confidence`, which measures agreement among the engines
-that ran (§8). **Every state is decided on a gate's `valid`**, and each gate is a governance
+it is never read from a verdict's `confidence`, which is URGE's: the weakest deciding engine's
+confidence, capped by the engines' agreement (§8). **Every state is decided on a gate's `valid`**, and each gate is a governance
 expression the portal evaluates through URGE on every datagram or call:
 
 | Gate | Expression | When `valid` is false |
